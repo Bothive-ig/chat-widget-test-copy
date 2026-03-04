@@ -1,43 +1,57 @@
 /**
  * ============================================================
  *  BotHive AI — Embeddable Chat Widget
- *  widget.embed.js | Version 2.0.0
+ *  widget.embed.js | Version 3.0.0
  *
  *  Single-file IIFE. Drop one <script> tag anywhere.
  *  Usage:
- *    <script src="widget.embed.js"></script>
+ *    <script src="widget.embed.js" data-bot-id="YOUR_BOT_ID"></script>
  *
- *  To configure, set window.BotHiveConfig BEFORE the script:
- *    <script>
- *      window.BotHiveConfig = {
- *        webhookUrl: 'https://...',
- *        botName:    'My Bot',
- *      };
- *    </script>
- *    <script src="widget.embed.js"></script>
+ *  Config is loaded automatically from the BotHive API
+ *  using the bot ID provided in the data-bot-id attribute.
  * ============================================================
  */
 (function () {
   'use strict';
 
-  // ── CONFIGURATION ─────────────────────────────────────────
-  const cfg = Object.assign({
-    webhookUrl:       'https://mii19.app.n8n.cloud/webhook-test/widgetreply2',
-    botName:          'Tara',
-    botTagline:       'How can I help you today?',
-    welcomeMsg:       "Hi 👋 I'm Tara from BotHive AI. I help businesses launch chat and voice bots that handle leads, bookings, and support. Want to try it out or book a demo?",
-    placeholder:      'Message...',
-    storageKey:       'bh_chat_session',
+  // ── BOOTSTRAP ─────────────────────────────────────────────
+  // Capture currentScript synchronously (not available after async)
+  const SCRIPT = document.currentScript;
+  const BOT_ID = SCRIPT && SCRIPT.dataset.botId;
+  const CONFIG_API = 'https://ufvxiycrokjdegmmgglx.supabase.co/functions/v1/get-widget-config';
+
+  if (!BOT_ID) {
+    console.error('[BotHive] Missing data-bot-id on script tag.');
+    return;
+  }
+
+  fetch(`${CONFIG_API}?id=${encodeURIComponent(BOT_ID)}`)
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function (config) { initWidget(config); })
+    .catch(function (err) {
+      console.error('BotHive config load failed', err);
+    });
+
+  // ── WIDGET INIT ───────────────────────────────────────────
+  function initWidget(apiConfig) {
+
+  // ── CONFIGURATION (mapped from API response) ──────────────
+  const cfg = {
+    webhookUrl:       apiConfig.webhook_url || '',
+    botName:          apiConfig.name || 'Assistant',
+    botTagline:       apiConfig.tagline || '',
+    welcomeMsg:       apiConfig.welcome_msg || 'Hi! How can I help?',
+    placeholder:      apiConfig.placeholder || 'Message...',
+    storageKey:       'bh_chat_' + BOT_ID,
     requestTimeoutMs: 20000,
-    avatarUrl:        'agent-avatar.png',
-    primaryColor:     '#ea580c',
-    headerStatus:     'Active now',
-    quickReplies: [
-      { label: 'Get Started', message: 'Get Started' },
-      { label: 'Book a Demo', message: 'Book a Demo' },
-      { label: 'See Pricing', message: 'See Pricing' },
-    ],
-  }, window.BotHiveConfig || {});
+    avatarUrl:        apiConfig.avatar_url || 'agent-avatar.png',
+    primaryColor:     apiConfig.primary_color || '#ea580c',
+    headerStatus:     apiConfig.header_status || 'Active now',
+    quickReplies:     apiConfig.quick_replies || [],
+  };
 
   // ── INLINED CSS ───────────────────────────────────────────
   const CSS = `
@@ -592,15 +606,6 @@
     scrollToBottom();
   }
 
-  function appendSystemMessage(text) {
-    const messagesInner = document.getElementById('bh-messages-inner');
-    const typingRow = document.getElementById('bh-typing-row');
-    const div = document.createElement('div');
-    div.className = 'bh-system-msg';
-    div.textContent = text;
-    messagesInner.insertBefore(div, typingRow);
-  }
-
   function setTyping(visible) {
     const row = document.getElementById('bh-typing-row');
     row.classList.toggle('bh-visible', visible);
@@ -612,7 +617,7 @@
     const typingRow = document.getElementById('bh-typing-row');
     const div = document.createElement('div');
     div.className = 'bh-error-msg';
-    div.textContent = `⚠️  ${msg}`;
+    div.textContent = '\u26a0\ufe0f  ' + msg;
     messagesInner.insertBefore(div, typingRow);
     scrollToBottom();
   }
@@ -631,7 +636,7 @@
 
   function autoGrowTextarea(el) {
     el.style.height = 'auto';
-    el.style.height = `${el.scrollHeight}px`;
+    el.style.height = el.scrollHeight + 'px';
   }
 
   function validateSendButton() {
@@ -732,7 +737,7 @@
     const now = new Date();
     const day = now.toLocaleDateString([], { weekday: 'long' });
     const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    el.textContent = `${day}, ${time}`;
+    el.textContent = day + ', ' + time;
   }
 
   // ── EVENT BINDING ────────────────────────────────────────
@@ -773,9 +778,8 @@
 
   // ── INIT ─────────────────────────────────────────────────
   function injectColorOverride() {
-    if (cfg.primaryColor === '#ea580c') return; // default — no override needed
     const style = document.createElement('style');
-    style.textContent = `#bh-chat-root{--bh-primary:${cfg.primaryColor};}`;
+    style.textContent = '#bh-chat-root{--bh-primary:' + cfg.primaryColor + ';}';
     document.head.appendChild(style);
   }
 
@@ -787,7 +791,6 @@
     bindEvents();
     updateLauncherSubtitle();
     validateSendButton();
-    // Welcome screen always shown on load — history is dashboard-only
   }
 
   if (document.readyState === 'loading') {
@@ -795,5 +798,7 @@
   } else {
     init();
   }
+
+  } // end initWidget
 
 })();

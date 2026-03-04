@@ -79,38 +79,11 @@
 
   <!--
     ══════════════════════════════════════════════════
-    OPTION A: Embeddable single-file (recommended)
-    Add to any website with one line:
+    Single-line embed — config loaded from Supabase API
+    Replace YOUR_BOT_ID with your actual bot ID
     ══════════════════════════════════════════════════
   -->
-  <script src="widget.embed.js"></script>
-
-
-  <!--
-    ══════════════════════════════════════════════════
-    OPTION B: Separate CSS + JS files
-    Uncomment below and comment out the embed script:
-    ══════════════════════════════════════════════════
-    <link rel="stylesheet" href="widget.css">
-    <script src="widget.js"></script>
-  -->
-
-
-  <!--
-    ══════════════════════════════════════════════════
-    OPTION C: Custom configuration
-    Set window.BotHiveConfig before the script:
-    ══════════════════════════════════════════════════
-    <script>
-      window.BotHiveConfig = {
-        webhookUrl: 'https://mii19.app.n8n.cloud/webhook-test/widgetreply2',
-        botName:    'PlumbBot',
-        botTagline: 'Here to help 24/7',
-        welcomeMsg: 'Hi! Need a plumber? Tell us about your issue.',
-      };
-    </script>
-    <script src="widget.embed.js"></script>
-  -->
+  <script src="widget.embed.js" data-bot-id="YOUR_BOT_ID"></script>
 
 </body>
 
