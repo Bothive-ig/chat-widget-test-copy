@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BotHive AI — Chat Widget Demo</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #fafbff 50%, #f0f9ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .demo {
+      text-align: center;
+      color: #334155;
+      padding: 2rem;
+      max-width: 500px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #3b82f6;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 0.6rem;
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 0.4rem;
+    }
+
+    .hint {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="demo">
+    <div class="badge">BotHive AI</div>
+    <h1>Chat Widget Demo</h1>
+    <p>Click the blue chat bubble in the bottom-right corner to start a conversation.</p>
+    <p class="hint">
+      Uses <strong>widget.embed.js</strong> — a single &lt;script&gt; tag, no external dependencies.
+    </p>
+  </div>
+
+  <!--
+    ══════════════════════════════════════════════════
+    OPTION A: Embeddable single-file (recommended)
+    Add to any website with one line:
+    ══════════════════════════════════════════════════
+  -->
+  <script src="widget.embed.js"></script>
+
+
+  <!--
+    ══════════════════════════════════════════════════
+    OPTION B: Separate CSS + JS files
+    Uncomment below and comment out the embed script:
+    ══════════════════════════════════════════════════
+    <link rel="stylesheet" href="widget.css">
+    <script src="widget.js"></script>
+  -->
+
+
+  <!--
+    ══════════════════════════════════════════════════
+    OPTION C: Custom configuration
+    Set window.BotHiveConfig before the script:
+    ══════════════════════════════════════════════════
+    <script>
+      window.BotHiveConfig = {
+        webhookUrl: 'https://mii19.app.n8n.cloud/webhook-test/widgetreply2',
+        botName:    'PlumbBot',
+        botTagline: 'Here to help 24/7',
+        welcomeMsg: 'Hi! Need a plumber? Tell us about your issue.',
+      };
+    </script>
+    <script src="widget.embed.js"></script>
+  -->
+
+</body>
+
+</html>
