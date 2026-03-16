@@ -20,8 +20,26 @@
   const BOT_ID = SCRIPT && SCRIPT.dataset.botId;
   const CONFIG_API = 'https://ufvxiycrokjdegmmgglx.supabase.co/functions/v1/get-widget-config';
 
+  // Default config for local testing (used when no bot ID or API fails)
+  var DEFAULTS = {
+    name:          'Tara',
+    tagline:       'How can I help you today?',
+    welcome_msg:   "Hi! I'm Tara from BotHive AI. How can I help you today?",
+    placeholder:   'Message...',
+    webhook_url:   'https://mii19.app.n8n.cloud/webhook-test/widgetreply2',
+    avatar_url:    'agent-avatar.png',
+    primary_color: '#ea580c',
+    header_status: 'Active now',
+    quick_replies: [
+      { label: 'Get Started', message: 'Get Started' },
+      { label: 'Book a Demo', message: 'Book a Demo' },
+      { label: 'See Pricing', message: 'See Pricing' },
+    ],
+  };
+
   if (!BOT_ID) {
-    console.error('[BotHive] Missing data-bot-id on script tag.');
+    console.warn('[BotHive] No data-bot-id found — using default config.');
+    initWidget(DEFAULTS);
     return;
   }
 
@@ -32,7 +50,8 @@
     })
     .then(function (config) { initWidget(config); })
     .catch(function (err) {
-      console.error('BotHive config load failed', err);
+      console.warn('BotHive config load failed — using defaults.', err);
+      initWidget(DEFAULTS);
     });
 
   // ── WIDGET INIT ───────────────────────────────────────────
@@ -148,8 +167,8 @@
     /* ── Header ── */
     #bh-header{
       flex-shrink:0;background:#ffffff;
-      height:64px;padding:0 12px;
-      display:flex;align-items:center;gap:0;
+      height:64px;padding:0 16px;
+      display:flex;align-items:center;gap:8px;
       border-bottom:1px solid #f0f0f0;
     }
     #bh-header-back{
@@ -192,13 +211,13 @@
 
     /* ── Messages ── */
     #bh-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;scroll-behavior:smooth;background:#ffffff;position:relative;}
-    #bh-messages-inner{padding:20px 20px 16px;display:flex;flex-direction:column;flex:1;}
+    #bh-messages-inner{padding:20px 16px 16px;display:flex;flex-direction:column;flex:1;}
 
     /* ── Quick replies ── */
     .bh-action-buttons{display:flex;flex-wrap:wrap;gap:6px;padding:4px 16px 12px 16px;}
     .bh-action-btn{
       background:rgba(234,88,12,0.06);border:1px solid rgba(234,88,12,0.15);color:var(--bh-primary);
-      padding:7px 14px;border-radius:var(--bh-radius-full);font-size:12.5px;font-weight:500;
+      padding:8px 16px;border-radius:var(--bh-radius-full);font-size:12.5px;font-weight:600;
       cursor:pointer;transition:background 0.18s ease,color 0.18s ease,transform 0.15s ease,box-shadow 0.15s ease,border-color 0.18s ease;
       white-space:nowrap;letter-spacing:-0.005em;line-height:1.3;
     }
@@ -210,12 +229,12 @@
     .bh-action-btn:focus-visible{outline:2px solid var(--bh-primary);outline-offset:2px;}
 
     /* ── Message rows ── */
-    .bh-msg-row{display:flex;gap:0;margin-bottom:16px;animation:bh-msg-in 0.25s cubic-bezier(0.16,1,0.3,1) both;}
+    .bh-msg-row{display:flex;gap:0;margin-bottom:14px;animation:bh-msg-in 0.25s cubic-bezier(0.16,1,0.3,1) both;}
     .bh-msg-row.bh-user{justify-content:flex-end;}
     .bh-msg-avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;flex-shrink:0;align-self:flex-end;margin-right:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;}
     .bh-msg-avatar img{width:100%;height:100%;object-fit:cover;}
     .bh-msg-row.bh-user .bh-msg-avatar{display:none;}
-    .bh-bubble-wrap{display:flex;flex-direction:column;max-width:80%;min-width:0;align-self:flex-start;align-items:flex-start;}
+    .bh-bubble-wrap{display:flex;flex-direction:column;max-width:82%;min-width:0;align-self:flex-start;align-items:flex-start;}
     .bh-msg-row.bh-user .bh-bubble-wrap{align-self:flex-end;align-items:flex-end;}
     .bh-bubble{
       padding:16px 20px;border-radius:20px;font-size:14px;line-height:1.5;
@@ -223,9 +242,9 @@
       word-break:break-word;word-wrap:break-word;overflow-wrap:anywhere;
       box-shadow:0 2px 8px rgba(0,0,0,0.06);letter-spacing:-0.006em;
     }
-    .bh-msg-row.bh-bot .bh-bubble{border-bottom-left-radius:6px;}
+    .bh-msg-row.bh-bot .bh-bubble{border-bottom-left-radius:6px;border:1px solid rgba(0,0,0,0.05);}
     .bh-msg-row.bh-user .bh-bubble{
-      background:var(--bh-primary);color:#FFFFFF;padding:10px 16px;
+      background:var(--bh-primary);color:#FFFFFF;padding:12px 16px;
       box-shadow:0 1px 3px rgba(255,122,26,0.2);
     }
     .bh-msg-time{
@@ -272,24 +291,16 @@
       padding:12px 12px 0;display:flex;flex-direction:column;
     }
     .bh-input-wrapper{
-      display:flex;align-items:flex-end;gap:4px;
-      border:1px solid var(--bh-border-strong);border-radius:var(--bh-radius-full);
-      padding:6px 6px 6px 8px;background:var(--bh-surface);
+      display:flex;align-items:flex-end;gap:8px;
+      border:1.5px solid var(--bh-border-strong);border-radius:var(--bh-radius-full);
+      padding:8px 8px 8px 16px;background:var(--bh-surface);
       transition:border-color 0.2s ease,box-shadow 0.2s ease;
     }
-    .bh-input-icons-left{display:flex;align-items:center;gap:0;flex-shrink:0;}
-    .bh-input-icon-btn{
-      width:32px;height:32px;border-radius:50%;background:transparent;border:none;
-      cursor:pointer;display:flex;align-items:center;justify-content:center;
-      transition:background 0.15s ease;flex-shrink:0;
-    }
-    .bh-input-icon-btn:hover{background:#f3f4f6;}
-    .bh-input-icon-btn svg{width:17px;height:17px;stroke:#9ca3af;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
     .bh-input-wrapper:focus-within{border-color:var(--bh-primary);box-shadow:0 0 0 3px rgba(234,88,12,0.1);}
     #bh-input{
-      flex:1;resize:none;border:none;padding:7px 0;font-size:14px;line-height:1.5;
+      flex:1;resize:none;border:none;padding:6px 0;font-size:14px;line-height:1.5;
       color:var(--bh-text-primary);background:transparent;outline:none;
-      min-height:40px;max-height:100px;overflow-y:auto;font-family:var(--bh-font);
+      min-height:36px;max-height:100px;overflow-y:auto;font-family:var(--bh-font);
       letter-spacing:-0.006em;
     }
     #bh-input::placeholder{color:var(--bh-text-tertiary);}
@@ -537,17 +548,6 @@
         <!-- Footer -->
         <div id="bh-footer">
           <div class="bh-input-wrapper">
-            <div class="bh-input-icons-left" aria-hidden="true">
-              <button class="bh-input-icon-btn" aria-label="Attach file" tabindex="-1">
-                <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-              </button>
-              <button class="bh-input-icon-btn" aria-label="Emoji" tabindex="-1">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-              </button>
-              <button class="bh-input-icon-btn" aria-label="More options" tabindex="-1">
-                <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              </button>
-            </div>
             <textarea
               id="bh-input"
               placeholder="${escapeHTML(cfg.placeholder)}"
